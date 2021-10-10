@@ -12,4 +12,4 @@ class RSTask(Task):
         self.deadline_time = deadline_time
 
     def __str__(self) -> str:
-        return f'{self.duration_time} {self.ready_time} {self.deadline_time}'
+        return f'{self.duration_time} {self.ready_time} {self.deadline_time}\n'

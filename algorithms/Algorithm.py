@@ -1,12 +1,40 @@
 from abc import ABC, abstractmethod
+from typing import List
+
+from commons import parse_input_string, Task
 
 
 class Algorithm(ABC):
 
+    @classmethod
     @abstractmethod
-    def generate(self, file_prefix: str, instance_size: int):
+    def generate(cls, file_prefix: str, instance_size: int):
         pass
 
+    @classmethod
     @abstractmethod
-    def validate(self):
+    def validate(cls, file_name: str):
         pass
+
+    @classmethod
+    @abstractmethod
+    def _save_to_file(cls, tasks: List[Task], file_prefix: str, instance_size: int):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def _open_task_file(cls, file_name: str) -> List[Task]:
+        pass
+
+    @staticmethod
+    def open_result_file(file_name: str) -> List[int]:
+        file = open(f'out/{file_name}', 'r')
+        file.readline()
+        return list(map(lambda x: int(x), parse_input_string(file.readline())))
+
+    @staticmethod
+    def generate_mock_result_file(file_prefix, instance_size):
+        file = open(f'out/{file_prefix}_{instance_size}.txt', 'w')
+        file.write(f'{instance_size}\n')
+        for i in range(instance_size):
+            file.write(f'{i} ')

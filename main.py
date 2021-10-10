@@ -1,5 +1,7 @@
 import sys
 from typing import List
+from os import listdir
+from os.path import isfile, join
 
 from algorithms import Algorithm, SingleRSLmaxAlgorithm
 
@@ -23,7 +25,7 @@ def main():
 
 
 def select_algorithm(algorithm: str) -> Algorithm:
-    if algorithm == '1-rs-Lmax':
+    if algorithm == '1-RS-Lmax':
         return SingleRSLmaxAlgorithm()
     else:
         raise ValueError('Unknown algorithm')
@@ -34,7 +36,17 @@ def use_action(action: str, algorithm: Algorithm):
         for n in instance_sizes:
             algorithm.generate(prefix_value, n)
     elif action == 'validate':
-        algorithm.validate()
+        args = sys.argv
+        if len(args) >= 4:
+            algorithm.validate(args[4])
+        else:
+            files = [f for f in listdir('./out') if isfile(join('./out', f))]
+            for file in files:
+                if file != '.gitkeep':
+                    algorithm.validate(file)
+    elif action == 'mock':
+        for n in instance_sizes:
+            algorithm.generate_mock_result_file(prefix_value, n)
     else:
         raise ValueError('Unknown action')
 

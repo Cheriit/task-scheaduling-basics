@@ -1,5 +1,7 @@
-from .parsers import parse_rs_task, parse_task, parse_switch_times
-from .RSTask import RSTask
-from .Task import Task
-from .SwitchTimes import SwitchTimes
+from .Task import *
+from .SwitchTimes import *
+from .RSTask import *
+
 from .timers import *
+from .generators import *
+from .parsers import parse_rs_task, parse_task, parse_switch_times, parse_input_string

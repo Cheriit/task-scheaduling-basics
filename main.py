@@ -5,7 +5,7 @@ from os.path import isfile, join
 
 from algorithms import Algorithm, SingleRSLmaxAlgorithm
 
-instance_sizes: List[int] = list(range(50, 251, 50))
+instance_sizes: List[int] = list(range(50, 501, 50))
 prefix_value: str = '141320'
 
 
@@ -45,8 +45,10 @@ def use_action(action: str, algorithm: Algorithm):
                 if file != '.gitkeep':
                     algorithm.validate(file)
     elif action == 'mock':
-        for n in instance_sizes:
-            algorithm.generate_mock_result_file(prefix_value, n)
+        files = [f for f in listdir('./in') if isfile(join('./in', f))]
+        for file in files:
+            if file != '.gitkeep':
+                algorithm.generate_mock_result_file(file)
     else:
         raise ValueError('Unknown action')
 

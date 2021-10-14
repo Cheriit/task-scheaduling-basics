@@ -12,9 +12,9 @@ class SingleRSLmaxAlgorithm(Algorithm):
     @classmethod
     def generate(cls, file_prefix: str, instance_size: int):
         duration_times = parse_to_task_value(np.random.normal(30, 15, instance_size), 1)
-        ready_times = parse_to_task_value(np.random.exponential((sum(duration_times) - max(duration_times)) / 2, instance_size))
-        deadline_times = ready_times + duration_times + parse_to_task_value(np.random.uniform(1, 4 * np.mean(duration_times), instance_size))
-        tasks = [RSTask(ready_times[i], duration_times[i], deadline_times[i]) for i in range(instance_size)]
+        ready_times = parse_to_task_value(np.random.exponential(sum(duration_times) / 8, instance_size))
+        deadline_times = ready_times + duration_times + parse_to_task_value(np.random.uniform(1, 3 * np.mean(duration_times), instance_size))
+        tasks = [RSTask(int(ready_times[i]), int(duration_times[i]), int(deadline_times[i])) for i in range(instance_size)]
         cls.generate_switch_times(tasks)
         cls._save_to_file(tasks, file_prefix, instance_size)
 

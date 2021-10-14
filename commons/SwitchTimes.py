@@ -9,8 +9,8 @@ class SwitchTimes:
         self._switch_times = copy(times)
 
     def __str__(self) -> str:
-        string_switch_times = map(lambda x: str(x) + ' ', self._switch_times)
-        return ' '.join(string_switch_times) + '\n'
+        string_switch_times = map(lambda x: str(x), self._switch_times)
+        return (' '.join(string_switch_times)).strip() + '\n'
 
     def __getitem__(self, item) -> int:
         return self._switch_times[item]

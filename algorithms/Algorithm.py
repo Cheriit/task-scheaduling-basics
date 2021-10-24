@@ -19,7 +19,7 @@ class Algorithm(ABC):
 
     @classmethod
     @abstractmethod
-    def _save_to_file(cls, tasks: List[Task], file_prefix: str, instance_size: int):
+    def _save_to_input_file(cls, tasks: List[Task], file_prefix: str, instance_size: int):
         pass
 
     @classmethod
@@ -41,3 +41,14 @@ class Algorithm(ABC):
         file.write(f'{instance_size}\n')
         for i in range(instance_size):
             file.write(f'{i} ')
+
+    @staticmethod
+    def _save_to_output_file(file_name: str, value: int, tasks: List[int]):
+        file = open(f'out/{file_name}', 'w')
+        file.write(f'{value}\n')
+        for i in range(len(tasks)):
+            file.write(f'{i} ')
+
+    @abstractmethod
+    def schedule_tasks(self, file_name: str) -> List[int]:
+        pass

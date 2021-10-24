@@ -44,6 +44,12 @@ def use_action(action: str, algorithm: Algorithm):
             for file in files:
                 if file != '.gitkeep':
                     algorithm.validate(file)
+    elif action == 'solve':
+        files = [f for f in listdir('./in') if isfile(join('./in', f))]
+        for file in files:
+            if file != '.gitkeep':
+                algorithm.schedule_tasks(file)
+
     elif action == 'mock':
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
         for file in files:

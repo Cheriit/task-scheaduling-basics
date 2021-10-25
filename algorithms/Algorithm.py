@@ -47,7 +47,7 @@ class Algorithm(ABC):
         file = open(f'out/{file_name}', 'w')
         file.write(f'{value}\n')
         for i in range(len(tasks)):
-            file.write(f'{i} ')
+            file.write(f'{tasks[i]} ')
 
     @abstractmethod
     def schedule_tasks(self, file_name: str) -> List[int]:

@@ -9,7 +9,7 @@ from commons import RSTask, parse_to_task_value, SwitchTimes, parse_switch_times
 
 
 class SingleRSLmaxAlgorithm(Algorithm):
-    time_factor = 3/4
+    time_factor = 1/2
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> List[int]:
@@ -19,35 +19,34 @@ class SingleRSLmaxAlgorithm(Algorithm):
         order = []
         sorted_tasks = sorted(tasks, key=lambda task: task.ready_time)
         mean_time = mean([task.duration_time for task in sorted_tasks])
-        current_time = sorted_tasks[0].ready_time
+        current_time = 0
         for i in range(len(sorted_tasks)):
+            current_time = max(current_time, sorted_tasks[0].ready_time)
             # Inne parametry?
             possible_tasks: List[RSTask] = \
                 [task for task in sorted_tasks if task.ready_time <= (current_time + (cls.time_factor * mean_time))]
             # Sprawdzić kryterium min(deadline - przyjście - przełączenie - czas)
-            selected_task = min(possible_tasks, key=lambda task: task.deadline_time)
+            # if i == 0:
+            #     selected_task = min(possible_tasks, key=lambda task: task.deadline_time)
+            # else:
+            #     selected_task = min(possible_tasks, key=lambda task: task.deadline_time + tasks[order[-1]].switch_times[task.index])
+
+            # selected_task = min(possible_tasks, key=lambda task: task.deadline_time - task.duration_time)
+
+            if i == 0:
+                selected_task = max(possible_tasks, key=lambda task: (current_time + task.duration_time) - task.deadline_time)
+            else:
+                selected_task = max(possible_tasks, key=lambda task: (current_time + task.duration_time + tasks[order[-1]].switch_times[task.index]) - task.deadline_time)
             # Sprawdzić czy jeszcze jakieś zadanie się zmieści! ! ! - potencjalny wpływ
             order.append(selected_task.index)
             sorted_tasks.remove(selected_task)
-            # Przełączenie może być ZNAIM zadanie będzie gotowe!!!
-            if len(order) > 1:
-                current_time += selected_task.switch_times[order[-2]]
+            if i > 1:
+                current_time += tasks[order[-2]].switch_times[selected_task.index]
             current_time = max(selected_task.ready_time, current_time) + selected_task.duration_time
-            current_time = cls._get_current_time(current_time, selected_task.index, sorted_tasks)
         max_delay = cls._validate(tasks, order)
         cls._save_to_output_file(file_name, max_delay, order)
         print(f'Result score of {file_name}: \t {max_delay}')
         return order
-
-    @classmethod
-    def _get_current_time(cls, current_time: int, current_task_id: int, tasks: List[RSTask]):
-        min_new_time = current_time
-        for task in tasks:
-            if (task.ready_time + task.switch_times[current_task_id]) <= current_time:
-                return current_time
-            else:
-                min_new_time = min(min_new_time, task.ready_time + task.switch_times[current_task_id])
-        return min_new_time
 
     @classmethod
     def generate(cls, file_prefix: str, instance_size: int):

@@ -38,7 +38,7 @@ def use_action(action: str, algorithm: Algorithm):
     elif action == 'validate':
         args = sys.argv
         if len(args) >= 4:
-            algorithm.validate(args[4])
+            algorithm.validate(args[3])
         else:
             files = [f for f in listdir('./out') if isfile(join('./out', f))]
             for file in files:

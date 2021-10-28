@@ -17,3 +17,4 @@ Actions:
 - generate - generate test instances
 - validate - validate instance results
 - mock - prepare mock results
+- solve - solve tasks

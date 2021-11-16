@@ -1,6 +1,6 @@
 from typing import List
 
-from commons import RSTask, SwitchTimes, Task
+from commons import RSTask, SwitchTimes, Task, RWTask
 
 
 def exit_error(parameters: str):
@@ -31,6 +31,15 @@ def parse_task(task_parameters: str) -> Task:
 @parser_function
 def parse_rs_task(task_parameters: str) -> RSTask:
     return RSTask(int(float(task_parameters[1])), int(float(task_parameters[0])), int(float(task_parameters[2])))
+
+
+@parser_function
+def parse_rw_task(task_parameters: str) -> RWTask:
+    return RWTask(
+        int(float(task_parameters[1])),
+        int(float(task_parameters[0])),
+        int(float(task_parameters[2])),
+        int(float(task_parameters[3])))
 
 
 @parser_function

@@ -3,7 +3,7 @@ from typing import List
 from os import listdir
 from os.path import isfile, join
 
-from algorithms import Algorithm, SingleRSLmaxAlgorithm
+from algorithms import Algorithm, SingleRSLmaxAlgorithm, Q4RSumWUAlgorithm
 
 instance_sizes: List[int] = list(range(50, 501, 50))
 prefix_value: str = '141320'
@@ -27,6 +27,8 @@ def main():
 def select_algorithm(algorithm: str) -> Algorithm:
     if algorithm == '1-RS-Lmax':
         return SingleRSLmaxAlgorithm()
+    if algorithm == 'Q4-R-SumWU':
+        return Q4RSumWUAlgorithm()
     else:
         raise ValueError('Unknown algorithm')
 

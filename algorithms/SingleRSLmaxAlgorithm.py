@@ -1,11 +1,13 @@
 import random
+from math import floor
 from typing import List
 
 import numpy as np
 from numpy import mean
 
 from algorithms import Algorithm
-from commons import RSTask, parse_to_task_value, SwitchTimes, parse_switch_times, parse_rs_task, timer
+from commons import RSTask, parse_to_task_value, SwitchTimes, parse_switch_times, parse_rs_task, timer, \
+    parse_input_string
 
 
 class SingleRSLmaxAlgorithm(Algorithm):
@@ -107,7 +109,7 @@ class SingleRSLmaxAlgorithm(Algorithm):
     @classmethod
     def validate(cls, file_name: str):
         tasks = cls._open_task_file(file_name)
-        results = SingleRSLmaxAlgorithm.open_result_file(file_name)
+        results = cls.open_result_file(file_name)
         if len(tasks) != len(results):
             raise ValueError('Lack of coherency between input and result file')
         max_delay = cls._validate(tasks, results)
@@ -123,3 +125,27 @@ class SingleRSLmaxAlgorithm(Algorithm):
             current_moment += tasks[results[i]].duration_time
             max_delay = max(max_delay, current_moment - tasks[results[i]].deadline_time)
         return max_delay
+
+    @classmethod
+    def open_result_file(cls, file_name: str) -> List[int]:
+        file = open(f'out/{file_name}', 'r')
+        file.readline()
+        return list(map(lambda x: int(x) - 1, parse_input_string(file.readline())))
+
+    @classmethod
+    def _save_to_output_file(cls, file_name: str, value: int, tasks: List[int]):
+        file = open(f'out/{file_name}', 'w')
+        file.write(f'{value}\n')
+        for i in range(len(tasks)):
+            file.write(f'{tasks[i]} ')
+
+    @classmethod
+    def generate_mock_result_file(cls, file_name):
+        input_file = open(f'in/{file_name}', 'r')
+        file = open(f'out/{file_name}', 'w')
+        instance_size = floor(float(input_file.readline()))
+        file.write(f'{instance_size}\n')
+        for i in range(instance_size):
+            file.write(f'{i + 1} ')
+
+

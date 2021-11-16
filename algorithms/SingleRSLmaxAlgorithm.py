@@ -24,7 +24,8 @@ class SingleRSLmaxAlgorithm(Algorithm):
         algorithm = SingleRSLmaxAlgorithm()
         order = algorithm._run(tasks)
         max_delay = cls._validate(tasks, order)
-        cls._save_to_output_file(file_name, max_delay, order)
+
+        cls._save_to_output_file(file_name, max_delay, [order_item + 1 for order_item in order])
         print(f'Result score of {file_name}: \t {max_delay}')
         return order
 

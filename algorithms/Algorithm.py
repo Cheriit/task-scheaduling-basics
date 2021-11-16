@@ -31,7 +31,7 @@ class Algorithm(ABC):
     def open_result_file(file_name: str) -> List[int]:
         file = open(f'out/{file_name}', 'r')
         file.readline()
-        return list(map(lambda x: int(x), parse_input_string(file.readline())))
+        return list(map(lambda x: int(x) - 1, parse_input_string(file.readline())))
 
     @staticmethod
     def generate_mock_result_file(file_name):
@@ -40,7 +40,7 @@ class Algorithm(ABC):
         instance_size = floor(float(input_file.readline()))
         file.write(f'{instance_size}\n')
         for i in range(instance_size):
-            file.write(f'{i} ')
+            file.write(f'{i + 1} ')
 
     @staticmethod
     def _save_to_output_file(file_name: str, value: int, tasks: List[int]):

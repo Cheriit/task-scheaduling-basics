@@ -40,17 +40,18 @@ class Q4RSumWUAlgorithm(Algorithm):
         mean_time = 40
 
         duration_times = parse_to_task_value(np.random.normal(mean_time, 15, instance_size), 1)
-        ready_times = parse_to_task_value(np.random.uniform(0, sum(duration_times) * 1/5, instance_size))
+        ready_times = parse_to_task_value(np.random.uniform(0, sum(duration_times) * 1/6, instance_size))
         for i in range(floor(mean_time * 0.1)):
             ready_times[random.randint(0, instance_size-1)] = 0
         priorities = []
+        # A co jakby połączyć z rozkładem wykładniczym ?
         for duration in duration_times:
             if duration > mean_time:
                 priorities.append(np.random.uniform(40, 80))
             else:
                 priorities.append(np.random.uniform(1, 60))
         deadline_times = ready_times + duration_times + parse_to_task_value(
-            np.random.uniform(1, 5 * np.mean(duration_times), instance_size))
+            np.random.exponential(np.mean(duration_times) / 4, instance_size))
         tasks = [RWTask(int(ready_times[i]), int(duration_times[i]), int(deadline_times[i]), int(priorities[i])) for i in
                  range(instance_size)]
         cls._save_to_input_file(tasks, file_prefix, instance_size)
@@ -59,7 +60,9 @@ class Q4RSumWUAlgorithm(Algorithm):
     def _save_to_input_file(cls, tasks: List[RWTask], file_prefix: str, instance_size: int):
         file = open(f'in/{file_prefix}_{instance_size}.txt', 'w')
         file.write(f'{instance_size}\n')
-        file.write(f'1 5 3 2\n')
+        speedups = [random.randint(1, 10), random.randint(1, 10), 1, random.randint(1, 10)]
+        random.shuffle(speedups)
+        file.write(f'{speedups[0]} {speedups[1]} {speedups[2]} {speedups[3]}\n')
         for task in tasks:
             file.write(str(task))
 

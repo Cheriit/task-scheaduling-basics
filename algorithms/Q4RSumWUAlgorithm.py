@@ -10,16 +10,15 @@ from commons import RWTask, parse_to_task_value, parse_rw_task, parse_input_stri
 
 
 class Q4RSumWUAlgorithm(Algorithm):
-    time_factor = 0
-    ready_factor = 0.25
-    ready_time_factor = 0
-    deadline_factor = 3
-    duration_factor = 1
-    priority_factor = 3
-    ratio_factor = 0
+    time_factor = 0.1
+    ready_factor = 1
+    ready_time_factor = -1
+    deadline_factor = 6
+    duration_factor = 0
+    priority_factor = 4
 
     @classmethod
-    def schedule_tasks(cls, file_name: str):
+    def schedule_tasks(cls, file_name: str) -> int:
         machines, tasks = cls._open_task_file(file_name)
         for i in range(len(tasks)):
             tasks[i].set_index(i)
@@ -27,6 +26,7 @@ class Q4RSumWUAlgorithm(Algorithm):
         score = algorithm._run(machines, tasks)
         cls._save_to_output_file(file_name, score, machines)
         print(f'Result score of {file_name}: \t {score}')
+        return score
 
     @classmethod
     def _save_to_output_file(cls, file_name: str, value: float, machines: List[Machine]):

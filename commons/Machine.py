@@ -6,7 +6,7 @@ from commons import Task
 class Machine():
     current_time: float
     tasks: List[Task]
-    speedup: int
+    speedup: float
 
     def __init__(self, speedup):
         self.speedup = speedup
@@ -16,8 +16,8 @@ class Machine():
     def __str__(self) -> str:
         result = ''
         for task in self.tasks:
-            result += f'{task.index} '
-        return result.strip() + '\n'
+            result += f'{task.index + 1} '
+        return result.strip()
 
     def add_task(self, task: Task):
         self.tasks.append(task)

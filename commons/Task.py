@@ -1,5 +1,5 @@
 class Task:
-    duration_time: int
+    duration_time: float
     index: int
     ready_time: int
 

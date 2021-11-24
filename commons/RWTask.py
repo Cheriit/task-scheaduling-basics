@@ -4,6 +4,7 @@ from commons import Task
 class RWTask(Task):
     deadline_time: int
     priority: int
+    score: float
 
     def __init__(self, ready_time: int, duration_time: int, deadline_time: int, priority: int):
         super().__init__(duration_time, ready_time)

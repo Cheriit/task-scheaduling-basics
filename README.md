@@ -12,7 +12,8 @@ Repository for Task Scheduling Basics classes at PUT
 
 Algorithms: 
 - 1-RS-Lmax - Single processor scheduling with ready and switch times. Optimization criteria: maximum delay
-- Q4-R-SumWU - 4 
+- Q4-R-SumWU 
+- F4--EwDw
 Actions: 
 - generate - generate test instances
 - validate - validate instance results

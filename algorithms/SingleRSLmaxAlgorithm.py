@@ -20,14 +20,14 @@ class SingleRSLmaxAlgorithm(Algorithm):
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> List[int]:
-        tasks = cls._open_task_file(file_name)
+        tasks = cls.open_input_file(file_name)
         for i in range(len(tasks)):
             tasks[i].set_index(i)
         algorithm = SingleRSLmaxAlgorithm()
         order = algorithm._run(tasks)
         max_delay = cls._validate(tasks, order)
 
-        cls._save_to_output_file(file_name, max_delay, [order_item + 1 for order_item in order])
+        cls.create_output_file(file_name, max_delay, [order_item + 1 for order_item in order])
         print(f'Result score of {file_name}: \t {max_delay}')
         return order
 
@@ -73,7 +73,7 @@ class SingleRSLmaxAlgorithm(Algorithm):
         tasks = [RSTask(int(ready_times[i]), int(duration_times[i]), int(deadline_times[i])) for i in
                  range(instance_size)]
         cls.generate_switch_times(tasks)
-        cls._save_to_input_file(tasks, file_prefix, instance_size)
+        cls.create_input_file(tasks, file_prefix, instance_size)
 
     @classmethod
     def generate_switch_times(cls, tasks):
@@ -87,7 +87,7 @@ class SingleRSLmaxAlgorithm(Algorithm):
             tasks[i].switch_times = SwitchTimes(switch_times)
 
     @classmethod
-    def _save_to_input_file(cls, tasks: List[RSTask], file_prefix: str, instance_size: int):
+    def create_input_file(cls, tasks: List[RSTask], file_prefix: str, instance_size: int):
         file = open(f'in/{file_prefix}_{instance_size}.txt', 'w')
         file.write(f'{instance_size}\n')
         for task in tasks:
@@ -96,7 +96,7 @@ class SingleRSLmaxAlgorithm(Algorithm):
             file.write(str(task.switch_times))
 
     @classmethod
-    def _open_task_file(cls, file_name: str) -> List[RSTask]:
+    def open_input_file(cls, file_name: str) -> List[RSTask]:
         file = open(f'in/{file_name}')
         size = int(file.readline())
         tasks = []
@@ -108,7 +108,7 @@ class SingleRSLmaxAlgorithm(Algorithm):
 
     @classmethod
     def validate(cls, file_name: str):
-        tasks = cls._open_task_file(file_name)
+        tasks = cls.open_input_file(file_name)
         results = cls.open_result_file(file_name)
         if len(tasks) != len(results):
             raise ValueError('Lack of coherency between input and result file')
@@ -133,14 +133,14 @@ class SingleRSLmaxAlgorithm(Algorithm):
         return list(map(lambda x: int(x) - 1, parse_input_string(file.readline())))
 
     @classmethod
-    def _save_to_output_file(cls, file_name: str, value: int, tasks: List[int]):
+    def create_output_file(cls, file_name: str, value: int, tasks: List[int]):
         file = open(f'out/{file_name}', 'w')
         file.write(f'{value}\n')
         for i in range(len(tasks)):
             file.write(f'{tasks[i]} ')
 
     @classmethod
-    def generate_mock_result_file(cls, file_name):
+    def create_mock_result_file(cls, file_name):
         input_file = open(f'in/{file_name}', 'r')
         file = open(f'out/{file_name}', 'w')
         instance_size = floor(float(input_file.readline()))

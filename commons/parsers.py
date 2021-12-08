@@ -1,6 +1,6 @@
 from typing import List
 
-from commons import RSTask, SwitchTimes, Task, RWTask
+from commons import RSTask, SwitchTimes, Task, RWTask, FlowTask
 
 
 def exit_error(parameters: str):
@@ -13,9 +13,9 @@ def parser_function(parser_fn):
         try:
             task_parameters = parse_input_string(input_string)
             return parser_fn(task_parameters)
-        # except ValueError:
-        #     print('Cannot parse given string to integer')
-        #     exit_error(input_string)
+        except ValueError:
+            print('Cannot parse given string to integer')
+            exit_error(input_string)
         except IndexError:
             print('File has an incorrect format')
             exit_error(input_string)
@@ -40,6 +40,15 @@ def parse_rw_task(task_parameters: str) -> RWTask:
         int(float(task_parameters[0])),
         int(float(task_parameters[2])),
         int(float(task_parameters[3])))
+
+
+@parser_function
+def parse_flow_task(task_parameters: str) -> FlowTask:
+    return FlowTask(
+        list([int(float(x)) for x in task_parameters[:-3]]),
+        int(float(task_parameters[-3])),
+        int(float(task_parameters[-2])),
+        int(float(task_parameters[-1])))
 
 
 @parser_function

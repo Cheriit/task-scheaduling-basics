@@ -3,7 +3,7 @@ from typing import List
 from os import listdir
 from os.path import isfile, join
 
-from algorithms import Algorithm, SingleRSLmaxAlgorithm, Q4RSumWUAlgorithm
+from algorithms import Algorithm, SingleRSLmaxAlgorithm, Q4RSumWUAlgorithm, F4EwDwAlgorithm
 
 instance_sizes: List[int] = list(range(50, 501, 50))
 prefix_value: str = '141320'
@@ -29,6 +29,8 @@ def select_algorithm(algorithm: str) -> Algorithm:
         return SingleRSLmaxAlgorithm()
     if algorithm == 'Q4-R-SumWU':
         return Q4RSumWUAlgorithm()
+    if algorithm == 'F4--EwDw':
+        return F4EwDwAlgorithm()
     else:
         raise ValueError('Unknown algorithm')
 
@@ -37,7 +39,7 @@ def use_action(action: str, algorithm: Algorithm):
     if action == 'generate':
         for n in instance_sizes:
             algorithm.generate(prefix_value, n)
-    elif action == 'validate':
+    if action == 'validate' or action == 'generate':
         args = sys.argv
         if len(args) >= 4:
             algorithm.validate(args[3])
@@ -58,7 +60,7 @@ def use_action(action: str, algorithm: Algorithm):
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
         for file in files:
             if file != '.gitkeep':
-                algorithm.generate_mock_result_file(file)
+                algorithm.create_mock_result_file(file)
     else:
         raise ValueError('Unknown action')
 

@@ -16,7 +16,7 @@ class FlowTask:
         self.times = times
 
     def __str__(self) -> str:
-        times = " ".join([str(x) for x in self.times])
+        times = " ".join([str(int(x)) for x in self.times])
         return f'{times} {self.deadline_time} {self.earliness_weight} {self.delay_weight}'.strip() + '\n'
 
     def set_index(self, index: int):

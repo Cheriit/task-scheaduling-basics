@@ -71,8 +71,8 @@ class F4EwDwAlgorithm(Algorithm):
         ))
 
         earliness_weights = np.concatenate((
-            parse_to_task_value(np.random.normal(high_weight_range, 15, int(floor(instance_size * weight_divider))), 1),
-            parse_to_task_value(np.random.normal(low_weight_range, 5, int(ceil(instance_size * (1 - weight_divider)))), 1)
+            parse_to_task_value(np.random.normal(high_weight_range, 15, int(floor(instance_size * (1 - weight_divider)))), 1),
+            parse_to_task_value(np.random.normal(low_weight_range, 5, int(ceil(instance_size * weight_divider))), 1)
         ))
 
         delay_weights = np.concatenate((
@@ -85,7 +85,7 @@ class F4EwDwAlgorithm(Algorithm):
             sum(duration_times[1]),
             sum(duration_times[2]),
             sum(duration_times[3])
-        ])
+        ]) * 1.1
 
         deadline_times = [
             sum(duration_times[:, i]) + parse_to_task_value(np.random.uniform(0, max_sum))
@@ -126,14 +126,14 @@ class F4EwDwAlgorithm(Algorithm):
     def _validate(cls, tasks: List[FlowTask], results: List[int]) -> int:
         score = 0
         machine_times = [0, 0, 0, 0]
-        for i in range(len(results)):
+        for i in results:
             task = tasks[i]
             end_time = perform_task(machine_times, task)
             time_diff = task.deadline_time - end_time
             if time_diff > 0:
-                score += time_diff * task.delay_weight
+                score += time_diff * task.earliness_weight
             elif time_diff < 0:
-                score -= time_diff * task.earliness_weight
+                score -= time_diff * task.delay_weight
         return score
 
     @classmethod

@@ -19,17 +19,17 @@ class Q4RSumWUAlgorithm(Algorithm):
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> int:
-        machines, tasks = cls._open_task_file(file_name)
+        machines, tasks = cls.open_input_file(file_name)
         for i in range(len(tasks)):
             tasks[i].set_index(i)
         algorithm = Q4RSumWUAlgorithm()
         score = algorithm._run(machines, tasks)
-        cls._save_to_output_file(file_name, score, machines)
+        cls.create_output_file(file_name, score, machines)
         print(f'Result score of {file_name}: \t {score}')
         return score
 
     @classmethod
-    def _save_to_output_file(cls, file_name: str, value: float, machines: List[Machine]):
+    def create_output_file(cls, file_name: str, value: float, machines: List[Machine]):
         file = open(f'out/{file_name}', 'w')
         file.write(f'{value}\n')
         for i in range(len(machines)):
@@ -89,10 +89,10 @@ class Q4RSumWUAlgorithm(Algorithm):
         tasks = [RWTask(int(ready_times[i]), int(duration_times[i]), int(deadline_times[i]), int(priorities[i])) for i
                  in
                  range(instance_size)]
-        cls._save_to_input_file(tasks, file_prefix, instance_size)
+        cls.create_input_file(tasks, file_prefix, instance_size)
 
     @classmethod
-    def _save_to_input_file(cls, tasks: List[RWTask], file_prefix: str, instance_size: int):
+    def create_input_file(cls, tasks: List[RWTask], file_prefix: str, instance_size: int):
         file = open(f'in/{file_prefix}_{instance_size}.txt', 'w')
         file.write(f'{instance_size}\n')
         speedups = [random.randint(1, 10), random.randint(1, 10), 1, random.randint(1, 10)]
@@ -102,7 +102,7 @@ class Q4RSumWUAlgorithm(Algorithm):
             file.write(str(task))
 
     @classmethod
-    def _open_task_file(cls, file_name: str) -> Tuple[List[Machine], List[RWTask]]:
+    def open_input_file(cls, file_name: str) -> Tuple[List[Machine], List[RWTask]]:
         file = open(f'in/{file_name}')
         size = int(file.readline())
         tasks = []
@@ -116,7 +116,7 @@ class Q4RSumWUAlgorithm(Algorithm):
 
     @classmethod
     def validate(cls, file_name: str):
-        machines, tasks = cls._open_task_file(file_name)
+        machines, tasks = cls.open_input_file(file_name)
         results = cls.open_result_file(file_name)
         max_delay = cls._validate(machines, tasks, results)
         print(f'Result score of {file_name}: \t {max_delay}')
@@ -143,7 +143,7 @@ class Q4RSumWUAlgorithm(Algorithm):
         return tasks
 
     @classmethod
-    def generate_mock_result_file(cls, file_name):
+    def create_mock_result_file(cls, file_name):
         input_file = open(f'in/{file_name}', 'r')
         file = open(f'out/{file_name}', 'w')
         instance_size = floor(float(input_file.readline()))

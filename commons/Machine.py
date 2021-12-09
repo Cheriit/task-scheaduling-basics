@@ -3,7 +3,7 @@ from typing import List
 from commons import Task
 
 
-class Machine():
+class Machine:
     current_time: float
     tasks: List[Task]
     speedup: float

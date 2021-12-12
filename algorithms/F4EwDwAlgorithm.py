@@ -22,6 +22,13 @@ def calculate_end_time(machines: List[int], task: FlowTask) -> int:
 
 
 class F4EwDwAlgorithm(Algorithm):
+    EARLINESS_PARAM = 1
+    DELAY_PARAM = 1
+    DUE_TIME_PARAM = 1
+    TIME_WEIGHT = 1
+    FREEDOM_WEIGHT = 1
+    EARLY_FREEDOM_WEIGHT = 1
+    LATE_FREEDOM_WEIGHT = 1
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> float:
@@ -31,7 +38,7 @@ class F4EwDwAlgorithm(Algorithm):
         algorithm = F4EwDwAlgorithm()
         task_order, score = algorithm._run(tasks)
         cls.create_output_file(file_name, score, task_order)
-        print(f'Result score of {file_name}: \t {score}')
+        # print(f'Result score of {file_name}: \t {score}')
         return score
 
     @classmethod
@@ -41,15 +48,53 @@ class F4EwDwAlgorithm(Algorithm):
         file.write(" ".join([str(x) for x in task_order]))
 
     def _run(self, tasks: List[FlowTask]) -> Tuple[List[int], float]:
-        sorted_tasks = sorted(tasks, key=lambda task: task.ready_time)
+        tasks = sorted(tasks, key=lambda task: task.deadline_time)
+        machines = [0, 0, 0, 0]
+        machine_stats = [
+            sum([task.times[0] for task in tasks]),
+            sum([task.times[1] for task in tasks]),
+            sum([task.times[2] for task in tasks]),
+            sum([task.times[3] for task in tasks])
+        ]
+        machine_weights = [machine / min(machine_stats) for machine in machine_stats]
+
+        for task in tasks:
+            task.calculate_score(machine_weights, self.TIME_WEIGHT, self.DUE_TIME_PARAM, self.DELAY_PARAM, self.EARLINESS_PARAM)
+
+        early_tasks = [task for task in tasks if task.earliness_weight <= task.delay_weight]
+        late_tasks = [task for task in tasks if task.earliness_weight > task.delay_weight]
+
+        current_time = 0
         score = 0
         task_order = []
-        for task in sorted_tasks:
-            task.score = 0
-
-        while len(sorted_tasks) > 0:
-            # Priority - delayed tasks -> They will grow! Split to 2 arrays - better delay and better early ?
-            pass
+        # 1. Only sorted - well optimized
+        # Kwadrat i bez podziału
+        while len(tasks) > 0:
+            if len(late_tasks) and late_tasks[0].deadline_time <= current_time:
+                task = min(late_tasks, key=lambda task: task.score + (
+                    (self.LATE_FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
+                ))
+                late_tasks.remove(task)
+            elif len(early_tasks):
+                task = min(early_tasks, key=lambda task: task.score + (
+                    (self.EARLY_FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
+                ))
+                early_tasks.remove(task)
+            else:
+                task = min(tasks, key=lambda task: task.score + (
+                    (self.FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
+                ))
+                if task.earliness_weight > task.delay_weight:
+                    late_tasks.remove(task)
+                else:
+                    early_tasks.remove(task)
+            tasks.remove(task)
+            current_time = perform_task(machines, task)
+            time_diff = task.deadline_time - current_time
+            if time_diff > 0:
+                score += time_diff * task.earliness_weight
+            elif time_diff < 0:
+                score -= time_diff * task.delay_weight
 
         return task_order, score
 

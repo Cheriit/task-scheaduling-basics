@@ -52,31 +52,9 @@ def use_action(action: str, algorithm: Algorithm):
                     algorithm.validate(file)
     elif action == 'solve':
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
-        min_score = 999999999999999999999999
-        min_param = 0
-        F4EwDwAlgorithm.EARLINESS_PARAM = -9.7
-        # Koniec stałego wzrostu - ok 6,3. najlepsze 12.9
-        F4EwDwAlgorithm.DELAY_PARAM = 12.9
-        F4EwDwAlgorithm.DUE_TIME_PARAM = 0.6
-        # Niektóre instancje - Time_weight 5.5
-        F4EwDwAlgorithm.TIME_WEIGHT = 0.4
-        F4EwDwAlgorithm.FREEDOM_WEIGHT = 6.9
-        F4EwDwAlgorithm.EARLY_FREEDOM_WEIGHT = 0.3
-        F4EwDwAlgorithm.LATE_FREEDOM_WEIGHT = 1.9
-        for parameter in range(19, 40, 1):
-            F4EwDwAlgorithm.LATE_FREEDOM_WEIGHT = parameter/10
-            score = 0
-            for file in files:
-                if file != '.gitkeep':
-                    score += algorithm.schedule_tasks(file)
-
-            if score < min_score:
-                min_score = score
-                min_param = parameter
-                print(f'NEW BEST SCORE FOUND: {score} \t for {parameter/10} ')
-        print(f'FINAL BEST SCORE FOUND: {min_score} for {min_param/10}')
-
-
+        for file in files:
+            if file != '.gitkeep':
+                algorithm.schedule_tasks(file)
     elif action == 'mock':
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
         for file in files:

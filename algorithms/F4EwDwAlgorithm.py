@@ -22,13 +22,11 @@ def calculate_end_time(machines: List[int], task: FlowTask) -> int:
 
 
 class F4EwDwAlgorithm(Algorithm):
-    EARLINESS_PARAM = 1
-    DELAY_PARAM = 1
-    DUE_TIME_PARAM = 1
-    TIME_WEIGHT = 1
-    FREEDOM_WEIGHT = 1
-    EARLY_FREEDOM_WEIGHT = 1
-    LATE_FREEDOM_WEIGHT = 1
+    EARLINESS_PARAM = -127.3
+    DELAY_PARAM = 41.4
+    DUE_TIME_PARAM = 20.9
+    TIME_WEIGHT = -0.3
+    FREEDOM_WEIGHT = -0.3
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> float:
@@ -57,37 +55,16 @@ class F4EwDwAlgorithm(Algorithm):
             sum([task.times[3] for task in tasks])
         ]
         machine_weights = [machine / min(machine_stats) for machine in machine_stats]
-
         for task in tasks:
             task.calculate_score(machine_weights, self.TIME_WEIGHT, self.DUE_TIME_PARAM, self.DELAY_PARAM, self.EARLINESS_PARAM)
 
-        early_tasks = [task for task in tasks if task.earliness_weight <= task.delay_weight]
-        late_tasks = [task for task in tasks if task.earliness_weight > task.delay_weight]
-
-        current_time = 0
         score = 0
         task_order = []
-        # 1. Only sorted - well optimized
-        # Kwadrat i bez podziału
         while len(tasks) > 0:
-            if len(late_tasks) and late_tasks[0].deadline_time <= current_time:
-                task = min(late_tasks, key=lambda task: task.score + (
-                    (self.LATE_FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
-                ))
-                late_tasks.remove(task)
-            elif len(early_tasks):
-                task = min(early_tasks, key=lambda task: task.score + (
-                    (self.EARLY_FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
-                ))
-                early_tasks.remove(task)
-            else:
-                task = min(tasks, key=lambda task: task.score + (
-                    (self.FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
-                ))
-                if task.earliness_weight > task.delay_weight:
-                    late_tasks.remove(task)
-                else:
-                    early_tasks.remove(task)
+            task = min(tasks, key=lambda task: task.score + (
+                (self.FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
+            ))
+            task_order.append(task.index + 1)
             tasks.remove(task)
             current_time = perform_task(machines, task)
             time_diff = task.deadline_time - current_time
@@ -95,7 +72,6 @@ class F4EwDwAlgorithm(Algorithm):
                 score += time_diff * task.earliness_weight
             elif time_diff < 0:
                 score -= time_diff * task.delay_weight
-
         return task_order, score
 
     @classmethod

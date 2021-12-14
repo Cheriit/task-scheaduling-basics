@@ -52,9 +52,19 @@ def use_action(action: str, algorithm: Algorithm):
                     algorithm.validate(file)
     elif action == 'solve':
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
+        # min_score = 9999999999999999999999999999
+        # min_param = 0
+        # for i in range(-120, -99, 1):
+        #     score = 0
+        #     F4EwDwAlgorithm.EARLINESS_PARAM = i / 10
         for file in files:
             if file != '.gitkeep':
                 algorithm.schedule_tasks(file)
+            # if score < min_score:
+            #     min_score = score
+            #     min_param = i/10
+            #     print(f"MIN: \t {score} \t {i/10} ")
+        # print(f"FIN MIN \t {min_score} \t {min_param}")
     elif action == 'mock':
         files = [f for f in listdir('./in') if isfile(join('./in', f))]
         for file in files:

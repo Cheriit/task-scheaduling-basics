@@ -1,4 +1,5 @@
 from math import floor, ceil
+from statistics import mean
 from typing import List, Tuple
 
 import numpy as np
@@ -22,22 +23,27 @@ def calculate_end_time(machines: List[int], task: FlowTask) -> int:
 
 
 class F4EwDwAlgorithm(Algorithm):
-    EARLINESS_PARAM = -127.3
-    DELAY_PARAM = 41.4
-    DUE_TIME_PARAM = 20.9
-    TIME_WEIGHT = -0.3
-    FREEDOM_WEIGHT = -0.3
+    EARLINESS_PARAM = -11
+    DELAY_PARAM = -4.2
+    DUE_TIME_PARAM = 954.1
+    TIME_WEIGHT = 1242.9
+    FREEDOM_WEIGHT = 0.2
+    EARLY_WEIGHT = 137
+    LATE_WEIGHT = 85.3
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> float:
         tasks = cls.open_input_file(file_name)
         for i in range(len(tasks)):
             tasks[i].set_index(i)
+        mean_time = mean([sum(task.times) for task in tasks])
+        mean_late_weight = mean([task.delay_weight for task in tasks])
+        mean_early_weight = mean([task.earliness_weight for task in tasks])
         algorithm = F4EwDwAlgorithm()
         task_order, score = algorithm._run(tasks)
         cls.create_output_file(file_name, score, task_order)
-        # print(f'Result score of {file_name}: \t {score}')
-        return score
+        print(f'Result score of {file_name}: \t {score}')
+        return (score/mean_time)/len(tasks)/mean_late_weight/mean_early_weight
 
     @classmethod
     def create_output_file(cls, file_name: str, score: float, task_order: List[FlowTask]):
@@ -61,9 +67,11 @@ class F4EwDwAlgorithm(Algorithm):
         score = 0
         task_order = []
         while len(tasks) > 0:
-            task = min(tasks, key=lambda task: task.score + (
+            task = min(tasks, key=lambda task: int(task.score + (
                 (self.FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
-            ))
+                + (self.EARLY_WEIGHT * task.earliness_weight * max(calculate_end_time(machines, task) - task.deadline_time, 0))
+                + (self.LATE_WEIGHT * task.delay_weight * max(task.deadline_time - calculate_end_time(machines, task), 0))
+            )))
             task_order.append(task.index + 1)
             tasks.remove(task)
             current_time = perform_task(machines, task)

@@ -25,5 +25,6 @@ class FlowTask:
     def calculate_score(self, machine_weights, time_weight: float, due_time_param: float, delay_param: float, earliness_param: float):
         self.score = 0
         for i in range(len(self.times)):
-            self.score += time_weight * machine_weights[i] * self.times[i]
+            self.score += machine_weights[i] * self.times[i]
+        self.score *= time_weight
         self.score += due_time_param * self.deadline_time - delay_param * self.delay_weight - earliness_param * self.earliness_weight

@@ -20,14 +20,6 @@ def calculate_end_time(machines: List[int], task: FlowTask) -> int:
 
 
 class F4EwDwAlgorithm(Algorithm):
-    EARLINESS_PARAM = -11
-    DELAY_PARAM = -4.2
-    DUE_TIME_PARAM = 954.1
-    TIME_WEIGHT = 1242.9
-    FREEDOM_WEIGHT = 0.2
-    EARLY_WEIGHT = 1
-    LATE_WEIGHT = 500
-
     @classmethod
     def schedule_tasks(cls, file_name: str) -> float:
         tasks = cls.open_input_file(file_name)
@@ -36,8 +28,6 @@ class F4EwDwAlgorithm(Algorithm):
         algorithm = F4EwDwAlgorithm()
         task_order, score = algorithm._run(tasks)
         cls.create_output_file(file_name, score, task_order)
-        # print(f'Result score of {file_name}: \t {score}')
-        print(f'{score}')
         return score
 
     @classmethod
@@ -54,7 +44,7 @@ class F4EwDwAlgorithm(Algorithm):
         late_tasks = []
         while len(tasks) > 0 or len(late_tasks) > 0:
             if len(late_tasks) > 0:
-                task = max(late_tasks, key=lambda task: task.delay_weight)
+                task = max(late_tasks, key=lambda task: task.late_criterium)
                 late_tasks.remove(task)
             else:
                 task = min(tasks, key=lambda task: task.earliness_weight * max(task.deadline_time - calculate_end_time(machines, task), 0))
@@ -66,8 +56,8 @@ class F4EwDwAlgorithm(Algorithm):
                 score += time_diff * task.earliness_weight
             elif time_diff < 0:
                 score -= time_diff * task.delay_weight
-            late_tasks += [task for task in tasks if task.deadline_time < current_time + sum(task.times)]
-            tasks = [task for task in tasks if task.deadline_time >= current_time + sum(task.times)]
+            late_tasks += [task for task in tasks if task.deadline_time < current_time + task.time_sum]
+            tasks = [task for task in tasks if task.deadline_time >= current_time + task.time_sum]
         return task_order, score
 
     @classmethod

@@ -8,8 +8,6 @@ from algorithms import Algorithm, SingleRSLmaxAlgorithm, Q4RSumWUAlgorithm, F4Ew
 instance_sizes: List[int] = list(range(50, 501, 50))
 prefix_value: str = '141320'
 
-indexes = ['141320', '141220', '141317', '141286', '141337', '141216', '141244']
-files = [ f'{index}_{size}.txt' for index in indexes for size in instance_sizes]
 def main():
     """
     Algorithms runner.
@@ -19,7 +17,7 @@ def main():
     """
     args = sys.argv
     if len(args) == 2:
-        use_action(args[1], Q4RSumWUAlgorithm())
+        use_action(args[1], F4EwDwAlgorithm())
     elif len(args) >= 3:
         algorithm = select_algorithm(args[1])
         use_action(args[2], algorithm)
@@ -52,8 +50,7 @@ def use_action(action: str, algorithm: Algorithm):
                 if file != '.gitkeep':
                     algorithm.validate(file)
     elif action == 'solve':
-        files = [f'{index}_{size}.txt' for index in indexes for size in instance_sizes]
-        # files = [f for f in listdir('./in') if isfile(join('./in', f))]
+        files = [f for f in listdir('./in') if isfile(join('./in', f))]
         for file in files:
             if file != '.gitkeep':
                 algorithm.schedule_tasks(file)

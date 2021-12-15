@@ -1,5 +1,4 @@
 from math import floor, ceil
-from statistics import mean
 from typing import List, Tuple
 
 import numpy as np
@@ -16,10 +15,8 @@ def perform_task(machines: List[int], task: FlowTask) -> int:
 
 
 def calculate_end_time(machines: List[int], task: FlowTask) -> int:
-    current_time = machines[0] + task.times[0]
-    for i in range(1, len(task.times)):
-        current_time = max(current_time, machines[i]) + task.times[i]
-    return current_time
+    tmp_machines = machines.copy()
+    return perform_task(tmp_machines, task)
 
 
 class F4EwDwAlgorithm(Algorithm):
@@ -28,22 +25,20 @@ class F4EwDwAlgorithm(Algorithm):
     DUE_TIME_PARAM = 954.1
     TIME_WEIGHT = 1242.9
     FREEDOM_WEIGHT = 0.2
-    EARLY_WEIGHT = 137
-    LATE_WEIGHT = 85.3
+    EARLY_WEIGHT = 1
+    LATE_WEIGHT = 500
 
     @classmethod
     def schedule_tasks(cls, file_name: str) -> float:
         tasks = cls.open_input_file(file_name)
         for i in range(len(tasks)):
             tasks[i].set_index(i)
-        mean_time = mean([sum(task.times) for task in tasks])
-        mean_late_weight = mean([task.delay_weight for task in tasks])
-        mean_early_weight = mean([task.earliness_weight for task in tasks])
         algorithm = F4EwDwAlgorithm()
         task_order, score = algorithm._run(tasks)
         cls.create_output_file(file_name, score, task_order)
-        print(f'Result score of {file_name}: \t {score}')
-        return (score/mean_time)/len(tasks)/mean_late_weight/mean_early_weight
+        # print(f'Result score of {file_name}: \t {score}')
+        print(f'{score}')
+        return score
 
     @classmethod
     def create_output_file(cls, file_name: str, score: float, task_order: List[FlowTask]):
@@ -54,32 +49,25 @@ class F4EwDwAlgorithm(Algorithm):
     def _run(self, tasks: List[FlowTask]) -> Tuple[List[int], float]:
         tasks = sorted(tasks, key=lambda task: task.deadline_time)
         machines = [0, 0, 0, 0]
-        machine_stats = [
-            sum([task.times[0] for task in tasks]),
-            sum([task.times[1] for task in tasks]),
-            sum([task.times[2] for task in tasks]),
-            sum([task.times[3] for task in tasks])
-        ]
-        machine_weights = [machine / min(machine_stats) for machine in machine_stats]
-        for task in tasks:
-            task.calculate_score(machine_weights, self.TIME_WEIGHT, self.DUE_TIME_PARAM, self.DELAY_PARAM, self.EARLINESS_PARAM)
-
         score = 0
         task_order = []
-        while len(tasks) > 0:
-            task = min(tasks, key=lambda task: int(task.score + (
-                (self.FREEDOM_WEIGHT * (task.deadline_time - calculate_end_time(machines, task)))
-                + (self.EARLY_WEIGHT * task.earliness_weight * max(calculate_end_time(machines, task) - task.deadline_time, 0))
-                + (self.LATE_WEIGHT * task.delay_weight * max(task.deadline_time - calculate_end_time(machines, task), 0))
-            )))
+        late_tasks = []
+        while len(tasks) > 0 or len(late_tasks) > 0:
+            if len(late_tasks) > 0:
+                task = max(late_tasks, key=lambda task: task.delay_weight)
+                late_tasks.remove(task)
+            else:
+                task = min(tasks, key=lambda task: task.earliness_weight * max(task.deadline_time - calculate_end_time(machines, task), 0))
+                tasks.remove(task)
             task_order.append(task.index + 1)
-            tasks.remove(task)
             current_time = perform_task(machines, task)
             time_diff = task.deadline_time - current_time
             if time_diff > 0:
                 score += time_diff * task.earliness_weight
             elif time_diff < 0:
                 score -= time_diff * task.delay_weight
+            late_tasks += [task for task in tasks if task.deadline_time < current_time + sum(task.times)]
+            tasks = [task for task in tasks if task.deadline_time >= current_time + sum(task.times)]
         return task_order, score
 
     @classmethod
